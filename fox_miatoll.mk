@@ -44,26 +44,10 @@ OF_RUN_POST_FORMAT_PROCESS := 1
 # ensure that /sdcard is bind-unmounted before f2fs data repair or format (required for FBE v1)
 OF_UNBIND_SDCARD_F2FS := 1
 
-# FBEv2
-ifeq ($(FOX_VARIANT),FBEv2)
-   	OF_FLASHLIGHT_ENABLE := 0
+OF_FLASHLIGHT_ENABLE := 0
 
-	# no additional check for MIUI props
-        OF_NO_ADDITIONAL_MIUI_PROPS_CHECK := 1
+# no additional check for MIUI props
+OF_NO_ADDITIONAL_MIUI_PROPS_CHECK := 1
 
-   	# dispense with the entire OTA menu
-   	OF_DISABLE_OTA_MENU := 1
-
-else # FBEv1
-
-   	# prevent MIUI from overwriting OrangeFox
-   	OF_PATCH_AVB20 := 1
-
-       	# MIUI/delta incremental OTA stuff
-       	OF_NO_MIUI_PATCH_WARNING := 1
-       	OF_KEEP_DM_VERITY := 1
-       	OF_DISABLE_MIUI_OTA_BY_DEFAULT := 1
-   	OF_SUPPORT_ALL_BLOCK_OTA_UPDATES := 1
-   	OF_FIX_OTA_UPDATE_MANUAL_FLASH_ERROR := 1
-endif
-#
+# dispense with the entire OTA menu
+OF_DISABLE_OTA_MENU := 1

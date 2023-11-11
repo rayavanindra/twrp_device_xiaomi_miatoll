@@ -18,11 +18,14 @@
 # 	Please maintain this if you use this script or any part of it
 #
 
+# Enable project quotas and casefolding for emulated storage without sdcardfs
+$(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
+
 # fscrypt policy
-TW_USE_FSCRYPT_POLICY := 1
+TW_USE_FSCRYPT_POLICY := 2
 
 # shipping API
-PRODUCT_SHIPPING_API_LEVEL := 29
+PRODUCT_SHIPPING_API_LEVEL := 30
 
 # dynamic partition stuff
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
@@ -52,22 +55,11 @@ PRODUCT_SOONG_NAMESPACES += \
 # device asserts
 TARGET_OTA_ASSERT_DEVICE := miatoll,curtana,excalibur,gram,joyeuse
 
-ifeq ($(FOX_VARIANT),FBEv2)
-  # fscrypt policy
-   TW_USE_FSCRYPT_POLICY := 2
-
-  # Enable project quotas and casefolding for emulated storage without sdcardfs
-  $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
-
-  # shipping API
-  PRODUCT_SHIPPING_API_LEVEL := 30
-
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.crypto.dm_default_key.options_format.version=2 \
     ro.crypto.volume.filenames_mode=aes-256-cts \
     ro.crypto.volume.metadata.method=dm-default-key \
     ro.crypto.volume.options=::v2
-endif
 
 # crypto
 TW_INCLUDE_CRYPTO := true
@@ -97,4 +89,3 @@ RECOVERY_LIBRARY_SOURCE_FILES += \
     $(TARGET_OUT_SYSTEM_EXT_SHARED_LIBRARIES)/vendor.display.config@1.0.so \
     $(TARGET_OUT_SYSTEM_EXT_SHARED_LIBRARIES)/vendor.display.config@2.0.so \
     $(TARGET_OUT_SYSTEM_EXT_SHARED_LIBRARIES)/libdisplayconfig.qti.so
-#

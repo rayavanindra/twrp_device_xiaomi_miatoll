@@ -84,28 +84,12 @@ BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 # --- Prebuilt kernel
-# whether to do an inline build of the kernel sources
-ifeq ($(FOX_BUILD_FULL_KERNEL_SOURCES),1)
-    TARGET_KERNEL_SOURCE := kernel/xiaomi/miatoll
-    TARGET_KERNEL_CONFIG := vendor/curtana-fox_defconfig
-    TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
-    TARGET_KERNEL_ADDITIONAL_FLAGS := DTC_EXT=$(shell pwd)/prebuilts/misc/$(HOST_OS)-x86/dtc/dtc
-    TARGET_KERNEL_CLANG_COMPILE := true
-    KERNEL_SUPPORTS_LLVM_TOOLS := true
-    TARGET_KERNEL_CLANG_VERSION := 13.0.0
-    TARGET_KERNEL_CLANG_PATH := $(shell pwd)/prebuilts/clang/host/linux-x86/clang-$(TARGET_KERNEL_CLANG_VERSION)
-else
-    BOARD_INCLUDE_RECOVERY_DTBO := true
-    BOARD_INCLUDE_DTB_IN_BOOTIMG := true
-    ifeq ($(FOX_VARIANT),FBEv2)
-   	KERNEL_DIRECTORY := $(DEVICE_PATH)/prebuilt/fbev2
-    else
-    	KERNEL_DIRECTORY := $(DEVICE_PATH)/prebuilt
-    endif
-    BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_DIRECTORY)/dtbo.img
-    TARGET_PREBUILT_KERNEL := $(KERNEL_DIRECTORY)/Image.gz-dtb
-    BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_DIRECTORY)/dtbs
-endif # inline kernel build
+BOARD_INCLUDE_RECOVERY_DTBO := true
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+KERNEL_DIRECTORY := $(DEVICE_PATH)/prebuilt
+BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_DIRECTORY)/dtbo.img
+TARGET_PREBUILT_KERNEL := $(KERNEL_DIRECTORY)/Image.gz-dtb
+BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_DIRECTORY)/dtbs
 
 # Avb
 BOARD_AVB_ENABLE := true
@@ -134,6 +118,7 @@ BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
 TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_PRODUCT := product
 
 # Recovery
 BOARD_HAS_LARGE_FILESYSTEM := true
@@ -153,6 +138,9 @@ TARGET_USES_LOGD := true
 TW_EXCLUDE_TWRPAPP := true
 TW_NO_SCREEN_BLANK := true
 TW_SCREEN_BLANK_ON_BOOT := true
+TW_INCLUDE_RESETPROP := true
+TW_MAX_BRIGHTNESS := 4095
+TW_DEFAULT_BRIGHTNESS := 1638
 
 # building
 LC_ALL := C
@@ -166,33 +154,17 @@ BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --set_hashtree_disabled_flag
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
 
-#
-TARGET_COPY_OUT_PRODUCT := product
-TW_INCLUDE_RESETPROP := true
-
 # cure for "ELF binaries" problems
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 # deal with "error: overriding commands for target" problems
 BUILD_BROKEN_DUP_RULES := true
 
-# FBEv1 or FBEv2 ?
-ifeq ($(FOX_VARIANT),FBEv2)
-   TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/FBEv2/recovery-fbev2.fstab
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv2/recovery-fbev2-wrap0.fstab:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/recovery-fbev2-wrap0.fstab
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv2/twrp-fbev2.flags:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/twrp.flags
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv2/wrappedkey-fix-fbev2.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/wrappedkey-fix.sh
-   TW_MAX_BRIGHTNESS := 4095
-   TW_DEFAULT_BRIGHTNESS := 1638
-else
-   TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/FBEv1/recovery-fbev1.fstab
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv1/recovery-fbev1.fstab:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/recovery-fbev1.fstab
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv1/twrp-fbev1.flags:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/twrp.flags
-   PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/FBEv1/wrappedkey-fix-fbev1.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/wrappedkey-fix.sh
-   TW_MAX_BRIGHTNESS := 2047
-   TW_DEFAULT_BRIGHTNESS := 1200
-endif
-#
+# rootdir
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/recovery-fbev2.fstab
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/recovery-fbev2-wrap0.fstab:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/recovery-fbev2-wrap0.fstab
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/twrp-fbev2.flags:$(TARGET_COPY_OUT_RECOVERY)/root/system/etc/twrp.flags
+PRODUCT_COPY_FILES += $(DEVICE_PATH)/recovery/wrappedkey-fix-fbev2.sh:$(TARGET_COPY_OUT_RECOVERY)/root/system/bin/wrappedkey-fix.sh
+
 # debug for backups
 # TW_LIBTAR_DEBUG := true
-#

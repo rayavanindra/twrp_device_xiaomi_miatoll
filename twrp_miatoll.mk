@@ -24,9 +24,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, $(DEVICE_PATH)/device.mk)
 
-# Inherit any OrangeFox-specific settings
-$(call inherit-product-if-exists, $(DEVICE_PATH)/fox_miatoll.mk)
-
 # Inherit from twrp common
 $(call inherit-product, vendor/twrp/config/common.mk)
 
